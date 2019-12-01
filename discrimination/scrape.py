@@ -68,6 +68,8 @@ def scrape(
         data = table.find( query , {"_id": 0, "url": 1, "domain": 1}).limit(limit_rows)
         n_rows = min(table.count_documents(query), limit_rows)
         
+#     return(n_rows, data);
+        
     # Make a list with the url-list data (the query seems to time-out, this should fix this)
     row_list = []
     for i in range(n_rows):
@@ -114,7 +116,7 @@ def scrape(
                     # Sleep for an hour. If the daily limit is reached, then this step will be repeated a few times!
                     time.sleep(3600)
                         
-        #############################
+        ############################
         ######### TWITTER ##########
         ############################        
         elif domain == 'twitter':
@@ -123,7 +125,7 @@ def scrape(
                           row,
                           { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
 
-        #############################
+        ############################
         ###### EVERYDAYSEXISM ######
         ############################        
         elif domain == 'everydaysexism':
@@ -132,7 +134,7 @@ def scrape(
                           row,
                           { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
             
-        #############################
+        ############################
         ######   DIARY.COM    ######
         ############################        
         elif domain == 'diary':
@@ -141,8 +143,8 @@ def scrape(
                           row,
                           { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
             
-        #############################
-        ######   MY-DIARY.COM  ######
+        ############################
+        ######   MY-DIARY.COM  #####
         ############################        
         elif domain == 'my-diary':
             scraped = discrimination.mydiary.scrape(url, client, database)
@@ -150,9 +152,19 @@ def scrape(
                 table.update_one(
                               row,
                               { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
+                
+        ############################
+        ######     YOUTUBE    ######
+        ############################        
+        elif domain == 'youtube':
+            scraped = discrimination.youtube.scrape(url, client, database)
+            if scraped == True:
+                table.update_one(
+                              row,
+                              { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
                        
-        #############################
-        ####### ANYTHNG ELSE #######
+        ###########################
+        ####### ANYTHNG ELSE ######
         ###########################         
         elif report_missing_subscraper == True and domain not in list_unavailable:              
                 list_unavailable.append(domain)

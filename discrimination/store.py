@@ -8,6 +8,7 @@ import discrimination
 import requests
 import re
 import pymongo
+import datetime
 
 ################################
 ################################
@@ -24,7 +25,6 @@ def top_domains():
         The complete specification of the list can be found at https://publicsuffix.org/list/.'''
     
     r = requests.get('https://publicsuffix.org/list/public_suffix_list.dat')
-    # Encoding is stated to be utf-8.
     temp = r.content.decode(encoding='utf-8')
     domain_list = []
     
@@ -88,14 +88,19 @@ def url_list(
             domain = split[i]
             check = domain + "." + check
         
-        # Only add to Mongo DB if the url-domain combination does not exist already (case insensitive).
+        # Only add to Mongo DB if the url-domain combination does not exist already. (As in the begininng)
+        
         if table.count_documents({
             "url": str(url).lower(), 
             "domain": str(domain).lower()}) == 0:
             
-            table.insert_one({
-                "url"           : str(url).lower(), 
-                "domain"        : str(domain).lower(), 
-                "time_added"    : datetime.datetime.utcnow(),
-                "time_scraped" : ""
-            })
+            if table.count_documents({
+            "url": url, 
+            "domain": str(domain).lower()}) == 0:
+            
+                table.insert_one({
+                    "url"           : url, 
+                    "domain"        : str(domain).lower(), 
+                    "time_added"    : datetime.datetime.utcnow(),
+                    "time_scraped" : ""
+                })

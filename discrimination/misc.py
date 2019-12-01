@@ -7,6 +7,7 @@
 import discrimination
 import urllib.parse
 import selenium
+from selenium import webdriver
 import time
 import stem
 import requests
@@ -35,7 +36,7 @@ def scroll_down(url):
     '''Scroll to the end of the provided url, retrieve the html and return the (Selenium) driver.'''  
     
     # Setup Selenium and necessary counter
-    driver = selenium.webdriver.Firefox()
+    driver = webdriver.Firefox()
     driver.get(url)
     strikes = 0
 
