@@ -10,6 +10,7 @@ import bs4
 import time
 import re
 import pymongo
+import selenium
 
 ################################
 ################################
@@ -51,6 +52,7 @@ def get_seeds(timeout = 3):
 ####   GET FOLLOWERS   #########
 ################################
 ################################
+
 def get_followers(
     seeds,
     userlist = None,
@@ -148,6 +150,7 @@ def get_followers(
 ###  GET USERS AND STORE   ####
 ################################
 ################################
+
 def get_users_and_store(
     no_of_passes,
     timeout = 3,
@@ -203,6 +206,7 @@ def get_users_and_store(
 ######### GET POSTS   ##########
 ################################
 ################################
+
 def get_posts_and_store(
     url,
     client='mongodb://localhost:27017/',
@@ -271,6 +275,7 @@ def get_posts_and_store(
 #########   SCRAPER   ##########
 ################################
 ################################
+
 def scrape(
     url,
     client='mongodb://localhost:27017/',

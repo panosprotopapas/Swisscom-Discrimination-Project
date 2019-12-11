@@ -162,7 +162,37 @@ def scrape(
                 table.update_one(
                               row,
                               { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
-                       
+               
+        ############################
+        ######  BREITBART     ######
+        ############################        
+        elif domain == 'breitbart':
+            scraped = discrimination.breitbart.scrape(url, client, database)
+            if scraped == True:
+                table.update_one(
+                              row,
+                              { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
+                
+        ############################
+        ######     9GAG       ######
+        ############################        
+        elif domain == '9gag':
+            scraped = discrimination._9gag.scrape(url, client, database)
+            if scraped == True:
+                table.update_one(
+                              row,
+                              { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
+                
+        ############################
+        ######   MGTOW.COM    ######
+        ############################        
+        elif domain == 'mgtow':
+            scraped = discrimination.mgtow.scrape(url, client, database)
+            if scraped == True:
+                table.update_one(
+                              row,
+                              { "$set": { "time_scraped" : datetime.datetime.utcnow() } } )
+                   
         ###########################
         ####### ANYTHNG ELSE ######
         ###########################         

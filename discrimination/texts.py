@@ -97,7 +97,7 @@ def tokenize(
         remove_stopwords : True by default. Set to False if you want to keep stopwords'''
     
     # Setup tokenizer's regex and stop-words
-    tokenizer = nltk.tokenize.RegexpTokenizer('(?<!\w)[a-z]+(?!\w)')
+    tokenizer = nltk.tokenize.RegexpTokenizer('(?<!\w)[A-Za-z]+(?!\w)')
     stop_words = set(nltk.corpus.stopwords.words('english')) 
     list_of_tokens = []
     
@@ -177,6 +177,7 @@ def sentences_split(texts):
     list_sentences = []
     for text in texts:
         text = text.replace(".", ". ")
+        text = text.replace("vs.", "vs")
         text = text.replace("\n", ". ")
         sentences = re.split("((?<=\.|\?)(\s|\.))", text)
         sentences2 = []
@@ -216,6 +217,36 @@ def sentences_plot(list_of_texts, ylim = (0, 0.3), max_sentences = 20, figsize =
     
     if legend != None:
         matplotlib.pyplot.legend(legend)
+        
+################################
+################################
+#### PLOT NUMBER OF TOKENS #####
+################################
+################################
+
+def tokens_plot(list_of_tokens, ylim = (0, 0.3), max_words = 80, figsize = None, dpi = None, legend = None):    
+     
+    '''Produces a simple plot of the percentage frequency of tokens according to their number of words. Set the maximum number of words to plot (default is 80) and the y-limits.'''
+    
+    matplotlib.pyplot.figure(figsize = figsize, dpi = dpi)
+    matplotlib.pyplot.ylim(ylim)
+    matplotlib.pyplot.xlabel("Words per token")
+    matplotlib.pyplot.ylabel("Percentage of tokens")
+    
+    for tokens in list_of_tokens:
+        lengths = []
+        for token in tokens:
+            lengths.append(len(token))
+        number_of_words = []
+        frequency = []
+        for i in range(1, max_words + 1):
+            number_of_words.append(i)
+            percent = lengths.count(i)/len(lengths)
+            frequency.append(percent)        
+        matplotlib.pyplot.plot(number_of_words, frequency)
+    
+    if legend != None:
+        matplotlib.pyplot.legend(legend)
     
 ################################
 ################################
@@ -244,7 +275,7 @@ def spellcheck_tokens(
         counter += 1
         for i, word in enumerate(token):
             token[i] = spell.correction(word)
-        if counter%20000 == 0:
+        if counter%100000 == 0:
             print(str(counter) + " tokens spell-checked.", sep=" ")
     
     return tokens;

@@ -31,32 +31,55 @@ def url_decode(url):
 # SCROLL TO THE END OF A PAGE  #
 ################################
 ################################
-def scroll_down(url):
+def scroll_down(url, sleep = 0.5, strikes = 4, browser = "chrome"):
     
-    '''Scroll to the end of the provided url, retrieve the html and return the (Selenium) driver.'''  
+    '''Scroll to the end of the provided url, retrieve the html and return the (Selenium) driver.
+    
+    Parameters
+    ----------
+    url     : Well.. the url.
+    sleep   : How long to stop (in seconds) between presses of the END button.
+    strikes : The number of sleep-times the function will wait for the page to load fully before considering it fully loaded.
+    browser : The browser to use: chrome or firefox.''' 
     
     # Setup Selenium and necessary counter
-    driver = webdriver.Firefox()
+    if browser == "firefox":
+        driver = webdriver.Firefox()
+    else:
+        driver = webdriver.Chrome()
+     
     driver.get(url)
-    strikes = 0
-
-    # Get page and build a length counter
-    page = driver.page_source
-    length = len(driver.page_source)      
+    s = 0
     
-    driver.set_window_size(1600, 1080)   
+    # Wait a bit for everything to load
+    time.sleep(1)
+
+    # Get page, build a length counter, and find the html body
+    page = driver.page_source
+    length = len(driver.page_source)  
+    body = driver.find_element_by_tag_name('body')
+    
+    # Change window size if needed
+#     driver.set_window_size(1600, 1080) 
+    
     # Press END-key roughly once per second. Stop when the new page count is equal with the old 3 times in a row.
-    while strikes < 4:
-        driver.find_element_by_tag_name('body').send_keys(selenium.webdriver.common.keys.Keys.END)
+    while s < strikes:
+        
+        # Sleep a little
+        time.sleep(sleep)
+        
+        # Press the End key and check if more of the page has appeared.
+        body.send_keys(selenium.webdriver.common.keys.Keys.END)
         page = driver.page_source
         newlength = len(driver.page_source)
+        
+        # If nothing new has appeared, increase the strikes counter
         if length-1 <=  newlength <= length+1:
-            strikes += 1
+            s += 1
         else:
-            strikes = 0
+            s = 0
             length = newlength
-            time.sleep(0.5)
-    
+         
     return driver;
 
 ################################

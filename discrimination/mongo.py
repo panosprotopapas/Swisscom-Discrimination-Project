@@ -279,7 +279,7 @@ def save(
     database = "database"
     ):
     
-    '''Saves collection(s), in the selected folder.
+    '''Saves collection(s), in the selected folder. Make sure you have write access to this folder.
     
     Parameters
         ----------
