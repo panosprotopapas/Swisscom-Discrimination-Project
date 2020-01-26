@@ -10,6 +10,7 @@ import nltk
 import langdetect
 import matplotlib.pyplot
 import spellchecker
+import inflect
 
 ################################
 ################################
@@ -89,7 +90,7 @@ def tokenize(
     remove_stopwords = True
 ):
     
-    ''' Tokenizes texts and (optionally) removes stop-words. Will only keep words containing only letters, e.g. "hey m8, pub?" will become [hey, pub].
+    ''' Tokenizes texts and (optionally) removes stop-words. Will only keep words containing letters and\or numbers. Numbers are converted to the word equivalent (e.g. 2 becomes two).
            
         Parameters
         ----------
@@ -97,7 +98,7 @@ def tokenize(
         remove_stopwords : True by default. Set to False if you want to keep stopwords'''
     
     # Setup tokenizer's regex and stop-words
-    tokenizer = nltk.tokenize.RegexpTokenizer('(?<!\w)[A-Za-z]+(?!\w)')
+    tokenizer = nltk.tokenize.RegexpTokenizer('(?<!\w)[A-Za-z0-9]+(?!\w)')
     stop_words = set(nltk.corpus.stopwords.words('english')) 
     list_of_tokens = []
     
@@ -112,6 +113,18 @@ def tokenize(
                     token.append(word)
     
         list_of_tokens.append(token)
+    
+    # Turn numbers into words
+    p = inflect.engine()
+
+    for t in list_of_tokens:
+        for i, w in enumerate(t):
+            if re.fullmatch("\d+", w) != None:
+                w = p.number_to_words(w)
+                w.replace("-", " ")
+                t[i] = w
+        t = " ".join(t)
+        t = tokenizer.tokenize(text)
     
     return list_of_tokens;
 
@@ -136,14 +149,13 @@ def lowercase(texts):
 ################################
 ################################
 
-def keep_english(texts, notify = 10000 ):    
+def keep_english(texts):    
      
     ''' Only keeps the English texts from the provided list of texts. Returns the (almost) English-only list.
     
     Parameters
         ----------
-        texts  : The list of texts to be checked for English
-        notify : Every selected number of checks a notification is printed to act as a timer.'''
+        texts  : The list of texts to be checked for English'''
     
     list_temp = texts.copy()
     texts.clear()
@@ -152,8 +164,8 @@ def keep_english(texts, notify = 10000 ):
     # Print a notice every 10,000 texts checked, only keep texts in english
     for item in list_temp:
         counter += 1
-        if counter%notify == 0:
-            print(str(counter) + " texts checked.")
+        if counter%1000 == 0:
+            print(str(counter) + " texts checked.", end="\r", flush=True)
         try:
             language = langdetect.detect(item)
         except:
@@ -269,14 +281,15 @@ def spellcheck_tokens(
         distance : can be set to 1 or 2. It considers all words that are 1 or 2 letter permutations away (i.e. number of letter swaps) and then selects the most frequent one. The creator of the package suggests to use a distance of 1 to avoid silly things happening in longer words.'''
     
     spell = spellchecker.SpellChecker(language = language, distance = distance)
-    counter = 0
+    counter = 1
     
     for token in tokens:
-        counter += 1
         for i, word in enumerate(token):
             token[i] = spell.correction(word)
-        if counter%100000 == 0:
-            print(str(counter) + " tokens spell-checked.", sep=" ")
+        if counter % 1000 == 0:
+            print(counter, "sentences checked.", end="\r", flush= True)
+        counter += 1
+
     
     return tokens;
 

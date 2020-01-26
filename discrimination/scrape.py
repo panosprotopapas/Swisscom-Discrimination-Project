@@ -86,7 +86,7 @@ def scrape(
         
         # Print a percentage of completion (tqdm library was buggy)
         percentage = round(( i / n_rows)*100, 2)
-        print(str(percentage) + "%", end=" ")
+        print(str(percentage) + "%", end="\r", flush = True)
         i += 1
         
         domain = row["domain"]
